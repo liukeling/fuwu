@@ -4,9 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.sql.SQLException;
+
+import tools.oraclecaozuo;
 
 import dbdao.dbdao;
-
 
 public class fuwu {
 	public static void main(String[] args) {
@@ -29,6 +31,16 @@ public class fuwu {
 				}
 
 				public void windowClosing(WindowEvent e) {
+
+					if (oraclecaozuo.conn != null) {
+						try {
+							oraclecaozuo.conn.close();
+						} catch (SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+
 					System.exit(1);
 				}
 
@@ -45,7 +57,6 @@ public class fuwu {
 				}
 			});
 
-		
 			qqfuwu qfw = new qqfuwu();
 			qfw.start();
 			yunfuwu yfw = new yunfuwu();
