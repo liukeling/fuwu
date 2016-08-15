@@ -16,6 +16,7 @@ import comm.Modify_groupitem;
 import comm.Request;
 import comm.Response;
 import comm.SysInfo;
+import comm.qq_message;
 import comm.user;
 
 public class lianjie extends Thread {
@@ -459,11 +460,11 @@ public class lianjie extends Thread {
 		Response response = new Response();
 
 		user sendUser = oczqq.getUser(sendzhanghao);
-		ArrayList<String> liaotianjilu = oczqq.getNotReadjilu(sendzhanghao,
+		ArrayList<qq_message> liaotianjilu = oczqq.getNotReadjilu(sendzhanghao,
 				recivezhanghao);
 		response.setResponse("¸øÄãÎ´¶ÁÁÄÌì¼ÇÂ¼");
 		response.setSendUser(sendUser);
-		response.setLiaotianjilu(liaotianjilu);
+		response.setObj(liaotianjilu);
 
 		return response;
 	}

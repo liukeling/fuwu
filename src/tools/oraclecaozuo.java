@@ -15,28 +15,27 @@ import java.util.Map;
 
 import comm.Modify_groupitem;
 import comm.SysInfo;
+import comm.qq_message;
 import comm.user;
 
 import dbdao.dbdao;
 
 public class oraclecaozuo {
 
-	public Connection getlianjie() throws ClassNotFoundException, SQLException {
-		Connection conn = null;
-		Class.forName(dbdao.oracleDriver);
-		conn = DriverManager.getConnection(dbdao.oracleurl, dbdao.oracleuser,
-				dbdao.oraclepswd);
+	public static Connection conn = null;
+
+	public static Connection getlianjie() throws ClassNotFoundException,
+			SQLException {
+		if (conn == null) {
+			Class.forName(dbdao.oracleDriver);
+			conn = DriverManager.getConnection(dbdao.oracleurl,
+					dbdao.oracleuser, dbdao.oraclepswd);
+		}
 		return conn;
 	}
 
-	public void close(Connection conn, Statement stmt, ResultSet rs) {
-		if (rs != null) {
-			try {
-				rs.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
+	public void close(Statement stmt, ResultSet rs) {
+
 		if (stmt != null) {
 			try {
 				stmt.close();
@@ -44,9 +43,9 @@ public class oraclecaozuo {
 				e.printStackTrace();
 			}
 		}
-		if (conn != null) {
+		if (rs != null) {
 			try {
-				conn.close();
+				rs.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -57,19 +56,21 @@ public class oraclecaozuo {
 	public boolean cznamepswd(String zhanghao, String mima) {
 		String sql = "select * from user_zhanghaomima where user_zhanghao='"
 				+ zhanghao + "' and user_pswd='" + mima + "'";
-		Connection conn = null;
+
 		Statement stmt = null;
 		ResultSet rs = null;
 		boolean b = false;
 		try {
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 			b = rs.next();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 
 		return b;
@@ -79,13 +80,15 @@ public class oraclecaozuo {
 	public String ip_zhanghaoname(String ip) {
 		String sql = "select zi.user_zhanghao,zm.user_name from user_zhanghaomima zm,user_zhuangtai_ip zi where zm.user_zhanghao=zi.user_zhanghao and zi.user_ip='"
 				+ ip + "'";
-		Connection conn = null;
+
 		Statement stmt = null;
 		ResultSet rs = null;
 		String zhanghao = "";
 		String name = "";
 		try {
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 			rs.next();
@@ -94,7 +97,7 @@ public class oraclecaozuo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 		return name + "(" + zhanghao + ")";
 	}
@@ -104,11 +107,13 @@ public class oraclecaozuo {
 		boolean shangxiancg = false;
 		String sql = "update user_zhuangtai_ip set user_zhuangtai='在线' , user_ip='"
 				+ ip + "' where user_zhanghao=" + zhanghao;
-		Connection conn = null;
+
 		Statement stmt = null;
 
 		try {
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			conn.setAutoCommit(false);
 			stmt = conn.createStatement();
 
@@ -120,7 +125,7 @@ public class oraclecaozuo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			close(conn, stmt, null);
+			close(stmt, null);
 		}
 		return shangxiancg;
 	}
@@ -129,12 +134,14 @@ public class oraclecaozuo {
 	public String modifyReadSysInfo(String sinfo_id, String userId) {
 		String sql = "update sys_user set isread='y' where sysinfo_id="
 				+ sinfo_id + " and user_zhanghao=" + userId;
-		Connection conn = null;
+
 		Statement stmt = null;
 		ResultSet rs = null;
 		try {
 
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			int i = stmt.executeUpdate(sql);
 			if (i > 0) {
@@ -154,7 +161,7 @@ public class oraclecaozuo {
 			e.printStackTrace();
 			return "";
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 	}
 
@@ -172,12 +179,13 @@ public class oraclecaozuo {
 				+ beizhu
 				+ "', " + sysinfo_id + ", " + user_id + ")";
 
-		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
 		try {
 
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			int i = stmt.executeUpdate(sql);
 			return i;
@@ -185,7 +193,7 @@ public class oraclecaozuo {
 			e.printStackTrace();
 			return -1;
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 
 	}
@@ -195,12 +203,13 @@ public class oraclecaozuo {
 		int i = -1;
 		String sql = "select ssinfo_id_sqe.nextval id from dual";
 
-		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
 		try {
 
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 			if (rs != null && rs.next()) {
@@ -209,7 +218,7 @@ public class oraclecaozuo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 		return i;
 	}
@@ -230,11 +239,12 @@ public class oraclecaozuo {
 				+ zhanghao
 				+ ")) order by sys_date";
 
-		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
 		try {
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 
 			rs = stmt.executeQuery(sql);
@@ -280,7 +290,7 @@ public class oraclecaozuo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 
 		return al;
@@ -306,12 +316,13 @@ public class oraclecaozuo {
 					+ ", " + sinfo.getType_huifu() + ")";
 		}
 
-		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
 		try {
 
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			int i = stmt.executeUpdate(sql);
 			if (i > 0) {
@@ -323,7 +334,7 @@ public class oraclecaozuo {
 			e.printStackTrace();
 			return false;
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 
 	}
@@ -339,12 +350,13 @@ public class oraclecaozuo {
 				+ "where er.yiji_id = yi.yiji_id and user_me = " + myId
 				+ " and " + "er.fenzu_item = " + frindId;
 
-		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
 		try {
 
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 			if (rs.next()) {
@@ -357,13 +369,13 @@ public class oraclecaozuo {
 			e.printStackTrace();
 			return true;
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 	}
 
 	// 添加好友
 	public int addFrind(String zhanghao, Integer fenzuItem) {
-		Connection conn = null;
+
 		Statement stmt = null;
 		ResultSet rs = null;
 		String sql = "insert into frindlist_erjimulu values (erjimuluid_sqe.nextval, "
@@ -371,7 +383,9 @@ public class oraclecaozuo {
 
 		try {
 
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			int i = stmt.executeUpdate(sql);
 			return i;
@@ -380,7 +394,7 @@ public class oraclecaozuo {
 			e.printStackTrace();
 			return -1;
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 	}
 
@@ -390,11 +404,13 @@ public class oraclecaozuo {
 
 		String sql = "update user_zhuangtai_ip set user_zhuangtai='离线' , user_ip='' where user_zhanghao="
 				+ zhanghao;
-		Connection conn = null;
+
 		Statement stmt = null;
 
 		try {
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			conn.setAutoCommit(false);
 			stmt = conn.createStatement();
 
@@ -406,7 +422,7 @@ public class oraclecaozuo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			close(conn, stmt, null);
+			close(stmt, null);
 		}
 
 		return outLineOk;
@@ -420,12 +436,13 @@ public class oraclecaozuo {
 		String sql = "select yiji_id, fenzu_item from frindlist_yijimulu yi where yi.yiji_id not in (select yiji_id from frindlist_erjimulu) and user_me="
 				+ Myzhanghao;
 
-		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
 		try {
 
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 			while (rs != null && rs.next()) {
@@ -443,7 +460,7 @@ public class oraclecaozuo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 
 		return al;
@@ -455,13 +472,15 @@ public class oraclecaozuo {
 		String sql = "select yi.yiji_id id, yi.fenzu_item key, er.fenzu_item value"
 				+ " from frindlist_yijimulu yi, frindlist_erjimulu er"
 				+ " where yi.yiji_id=er.yiji_id and yi.user_me=" + Myzhanghao;
-		Connection conn = null;
+
 		Statement stmt = null;
 		ResultSet rs = null;
 
 		ArrayList<HashMap<HashMap<Integer, String>, user>> al = new ArrayList<HashMap<HashMap<Integer, String>, user>>();
 		try {
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 			while (rs.next()) {
@@ -484,7 +503,7 @@ public class oraclecaozuo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 
 		ArrayList<HashMap<HashMap<Integer, String>, user>> al1 = selectNullfenzu(Myzhanghao);
@@ -497,11 +516,13 @@ public class oraclecaozuo {
 	public boolean addfenzu(String zhanghao, String fenzu_name) {
 		String sql = "insert into frindlist_yijimulu values (yijimuluid_sqe.nextval, "
 				+ zhanghao + ", '" + fenzu_name + "')";
-		Connection conn = null;
+
 		Statement stmt = null;
 		ResultSet rs = null;
 		try {
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 
 			stmt = conn.createStatement();
 
@@ -512,28 +533,30 @@ public class oraclecaozuo {
 			e.printStackTrace();
 			return false;
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 	}
 
 	// 分组好友全移动
 	public boolean removeGroupAllFrinds(int from, int to) {
 		boolean remove = false;
-		Connection conn = null;
+
 		Statement stmt = null;
 		ResultSet rs = null;
 		String sql = "update frindlist_erjimulu set yiji_id = " + to
 				+ " where yiji_id = " + from;
 		try {
 
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			remove = stmt.execute(sql);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 
 		return remove;
@@ -544,13 +567,14 @@ public class oraclecaozuo {
 			String zhangHao) {
 		boolean modify = false;
 
-		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
 
 		try {
 			String sql = "";
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			int type = modify_item.getType();
 			switch (type) {
@@ -561,7 +585,7 @@ public class oraclecaozuo {
 						+ modify_item.getId();
 				int i = stmt.executeUpdate(sql);
 				System.out.println(sql);
-				if(i > 0){
+				if (i > 0) {
 					modify = true;
 				}
 				break;
@@ -570,7 +594,7 @@ public class oraclecaozuo {
 				sql = "insert into frindlist_yijimulu values (yijimuluid_sqe.nextval, "
 						+ zhangHao + ", '" + modify_item.getItem_Name() + "')";
 				int k = stmt.executeUpdate(sql);
-				if(k > 0){
+				if (k > 0) {
 					modify = true;
 				}
 				break;
@@ -579,7 +603,7 @@ public class oraclecaozuo {
 				sql = "delete frindlist_yijimulu where yiji_id = "
 						+ modify_item.getId();
 				int j = stmt.executeUpdate(sql);
-				if(j > 0){
+				if (j > 0) {
 					modify = true;
 				}
 				break;
@@ -588,7 +612,7 @@ public class oraclecaozuo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 
 		return modify;
@@ -601,18 +625,19 @@ public class oraclecaozuo {
 				+ Otherzhanghao + "and user_recive=" + Myzhanghao
 				+ "and isRead='否'";
 
-		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
 		try {
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 			ok = rs.next();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 
 		return ok;
@@ -626,11 +651,12 @@ public class oraclecaozuo {
 				+ "' where user_zhanghao=" + zhanghao + " and user_name='"
 				+ name + "'";
 
-		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
 		try {
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			i = stmt.executeUpdate(sql);
 			return i;
@@ -638,13 +664,13 @@ public class oraclecaozuo {
 			e.printStackTrace();
 			return 0;
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 	}
 
 	// 删除好友
 	public boolean delFrind(String frindId, String MyId) {
-		Connection conn = null;
+
 		Statement stmt = null;
 		ResultSet rs = null;
 		String sql = "delete frindlist_erjimulu er " + "where er.fenzu_item = "
@@ -653,7 +679,9 @@ public class oraclecaozuo {
 				+ " where yi.user_me = " + MyId + ")";
 		try {
 
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			int a = stmt.executeUpdate(sql);
 			sql = "delete frindlist_erjimulu er " + "where er.fenzu_item = "
@@ -671,7 +699,7 @@ public class oraclecaozuo {
 			e.printStackTrace();
 			return false;
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 	}
 
@@ -681,12 +709,13 @@ public class oraclecaozuo {
 		String sql = "select user_ip,user_name,user_zhuangtai from user_zhanghaomima zm,user_zhuangtai_ip zi where zm.user_zhanghao = zi.user_zhanghao and zm.user_zhanghao = "
 				+ zhanghao;
 
-		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
 
 		try {
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 
@@ -700,7 +729,7 @@ public class oraclecaozuo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 
 		return u;
@@ -712,12 +741,13 @@ public class oraclecaozuo {
 		String sql = "select * from user_zhuangtai_ip where user_zhanghao='"
 				+ zhangHao + "' and user_zhuangtai='在线'";
 
-		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
 
 		try {
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 
@@ -725,7 +755,7 @@ public class oraclecaozuo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 
 		return onLine;
@@ -738,11 +768,12 @@ public class oraclecaozuo {
 		String sql = "select user_zhanghao from user_zhanghaomima where user_name like '"
 				+ s + "' or user_zhanghao like '" + s + "'";
 
-		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
 		try {
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 
@@ -755,7 +786,7 @@ public class oraclecaozuo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 
 		return al;
@@ -778,11 +809,12 @@ public class oraclecaozuo {
 				+ isSend
 				+ "')";
 
-		Connection conn = null;
 		Statement stmt = null;
 
 		try {
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			conn.setAutoCommit(false);
 			stmt = conn.createStatement();
 
@@ -792,7 +824,7 @@ public class oraclecaozuo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			close(conn, stmt, null);
+			close(stmt, null);
 		}
 
 		return ok;
@@ -803,11 +835,13 @@ public class oraclecaozuo {
 				+ Myzhanghao + "," + frindzhanghao + ") and user_recive in ("
 				+ Myzhanghao + "," + frindzhanghao + ") order by NR_TIME";
 		String jilu = "";
-		Connection conn = null;
+
 		Statement stmt = null;
 		ResultSet rs = null;
 		try {
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 			while (rs.next()) {
@@ -824,29 +858,64 @@ public class oraclecaozuo {
 		return jilu;
 	}
 
-	// 获取未读的聊天记录：
-	public ArrayList<String> getNotReadjilu(String sendzhanghao,
-			String recivezhanghao) {
-		String sql = "select neirong from user_liaotianjilu where user_send="
-				+ sendzhanghao + " and user_recive=" + recivezhanghao
-				+ " and isread='否' order by NR_TIME";
-		Connection conn = null;
+	// 获取聊天记录 TODO
+	public ArrayList<qq_message> getJilu(int resrverUser, int sendUser, int id) {
+		ArrayList<qq_message> al = new ArrayList<qq_message>();
+		String sql = "select * from user_liaotianjilu where"
+				+ " user_recive in (" + resrverUser + ", " + sendUser
+				+ ") and user_send in (" + resrverUser + ", " + sendUser + ")"
+				+ " and jilu_id < " + id + " order by nr_time";
 		Statement stmt = null;
 		ResultSet rs = null;
-		ArrayList<String> al = null;
+		if (conn == null) {
+			try {
+				conn = getlianjie();
+				stmt = conn.createStatement();
+				rs = stmt.executeQuery(sql);
+				while(rs.next()){
+					qq_message message = new qq_message();
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				close(stmt, rs);
+			}
+		}
+
+		return al;
+	}
+
+	// 获取未读的聊天记录：
+	public ArrayList<qq_message> getNotReadjilu(String sendzhanghao,
+			String recivezhanghao) {
+		String sql = "select * from user_liaotianjilu where user_send="
+				+ sendzhanghao + " and user_recive=" + recivezhanghao
+				+ " and isread='否' order by NR_TIME";
+
+		Statement stmt = null;
+		ResultSet rs = null;
+		ArrayList<qq_message> al = null;
 
 		try {
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
-			al = new ArrayList<String>();
+			al = new ArrayList<qq_message>();
 			while (rs.next()) {
-				al.add(rs.getString("neirong"));
+				qq_message message = new qq_message();
+				message.setId(rs.getInt("JILU_ID"));
+				message.setMessage(rs.getString("NEIRONG"));
+				message.setReciveUser_zhanghao(recivezhanghao+"");
+				message.setSendUser_zhanghao(sendzhanghao+"");
+				al.add(message);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 
 		return al;
@@ -857,43 +926,47 @@ public class oraclecaozuo {
 		String sql = "update user_liaotianjilu set isread='是', issend='是' where user_send="
 				+ sendzhanghao + " and user_recive=" + recivezhanghao;
 
-		Connection conn = null;
 		Statement stmt = null;
 
 		try {
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 
 			stmt.executeUpdate(sql);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			close(conn, stmt, null);
+			close(stmt, null);
 		}
 	}
-	
-	//好友移动至某分组中
-	public boolean moveFrind(user frind, int groupId){
-		Connection conn = null;
+
+	// 好友移动至某分组中
+	public boolean moveFrind(user frind, int groupId) {
+
 		Statement stmt = null;
 		ResultSet rs = null;
-		String sql = "update frindlist_erjimulu set yiji_id = "+groupId+" where fenzu_item = "+frind.getZhanghao();
-		try{
-			
-			conn = getlianjie();
+		String sql = "update frindlist_erjimulu set yiji_id = " + groupId
+				+ " where fenzu_item = " + frind.getZhanghao();
+		try {
+
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			int i = stmt.executeUpdate(sql);
-			if(i > 0){
+			if (i > 0) {
 				return true;
-			}else{
+			} else {
 				return false;
 			}
-			
-		}catch(Exception e){
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
-		}finally{
-			close(conn, stmt, rs);
+		} finally {
+			close(stmt, rs);
 		}
 	}
 
@@ -902,13 +975,14 @@ public class oraclecaozuo {
 		String zhanghao = "";
 		String zhanghaochaxun = "select javaqq_test.nextval zhanghao from dual";
 
-		Connection conn = null;
 		Statement stmt = null;
 
 		ResultSet rs = null;
 
 		try {
-			conn = getlianjie();
+			if (conn == null) {
+				conn = getlianjie();
+			}
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(zhanghaochaxun);
 
@@ -933,7 +1007,7 @@ public class oraclecaozuo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			close(conn, stmt, rs);
+			close(stmt, rs);
 		}
 		return zhanghao;
 	}
