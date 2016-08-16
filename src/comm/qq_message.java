@@ -33,4 +33,14 @@ public class qq_message implements Serializable {
 	public void setId(int id) {
 		this.id = id;
 	}
+
+	@Override
+	public String toString() {
+		return "qq_message{" +
+				"id=" + id +
+				", message='" + message + '\'' +
+				", sendUser_zhanghao='" + sendUser_zhanghao + '\'' +
+				", reciveUser_zhanghao='" + reciveUser_zhanghao + '\'' +
+				'}';
+	}
 }

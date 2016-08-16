@@ -156,10 +156,10 @@ public class lianjie extends Thread {
 			ArrayList<HashMap<HashMap<Integer, String>, user>> al = oczqq
 					.getuserList(zhangHao);
 			response.setObj(al);
-			System.out.println(al.size()+"::::");
-			for(HashMap<HashMap<Integer, String>, user> hm : al){
-				System.out.println(hm.values().iterator().next());
-			}
+//			System.out.println(al.size()+"::::");
+//			for(HashMap<HashMap<Integer, String>, user> hm : al){
+//				System.out.println(hm.values().iterator().next());
+//			}
 		} else if (zhiLing.equals("下线")) {
 			String zhangHao = request.getMyzhanghao();
 			boolean OutLine = oczqq.OutLine(zhangHao);
@@ -366,7 +366,7 @@ public class lianjie extends Thread {
 		}else if("删除好友".equals(zhiLing)){
 			user frind = (user) request.getObj();
 			boolean del = oczqq.delFrind(frind.getZhanghao()+"", zhangHao);
-			System.out.println(zhiLing+"删除:"+del);
+//			System.out.println(zhiLing+"删除:"+del);
 			if(del){
 				//TODO
 				response.setResponse("删除好友成功");
@@ -406,6 +406,12 @@ public class lianjie extends Thread {
 			response.setResponse("移动好友结果");
 			response.setObj(remove);
 			reflushFrindList(zhangHao);
+		}else if("获取消息记录".equals(zhiLing)){
+			String duifangzhanghao = request.getDuifangzhanghao();
+			int qqmessage_id = (Integer) request.getObj();
+			ArrayList<qq_message> al = oczqq.getJilu(duifangzhanghao, zhangHao, qqmessage_id);
+			response.setResponse("消息记录");
+			response.setObj(al);
 		}
 		return response;
 	}
@@ -489,7 +495,6 @@ public class lianjie extends Thread {
 					ObjectOutputStream oos = new ObjectOutputStream(s
 							.getOutputStream());
 					oos.writeObject(response);
-					System.out.println("ceshi:自动更新列表   " + usersSocket.size());
 					oos.flush();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block

@@ -859,30 +859,49 @@ public class oraclecaozuo {
 	}
 
 	// 获取聊天记录 TODO
-	public ArrayList<qq_message> getJilu(int resrverUser, int sendUser, int id) {
+	public ArrayList<qq_message> getJilu(String resrverUser, String sendUser,
+			int id) {
 		ArrayList<qq_message> al = new ArrayList<qq_message>();
 		String sql = "select * from user_liaotianjilu where"
 				+ " user_recive in (" + resrverUser + ", " + sendUser
 				+ ") and user_send in (" + resrverUser + ", " + sendUser + ")"
 				+ " and jilu_id < " + id + " order by nr_time";
+		if (id == -1) {
+			sql = "select * from user_liaotianjilu where" + " user_recive in ("
+					+ resrverUser + ", " + sendUser + ") and user_send in ("
+					+ resrverUser + ", " + sendUser + ")" + " order by nr_time";
+		}
 		Statement stmt = null;
 		ResultSet rs = null;
-		if (conn == null) {
-			try {
+		try {
+			if (conn == null) {
 				conn = getlianjie();
-				stmt = conn.createStatement();
-				rs = stmt.executeQuery(sql);
-				while(rs.next()){
-					qq_message message = new qq_message();
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally {
-				close(stmt, rs);
 			}
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			ArrayList<qq_message> al1 = new ArrayList<qq_message>();
+			while (rs.next()) {
+				qq_message message = new qq_message();
+				message.setId(rs.getInt("JILU_ID"));
+				message.setMessage(rs.getString("NEIRONG"));
+				message.setReciveUser_zhanghao(rs.getString("USER_RECIVE"));
+				message.setSendUser_zhanghao(rs.getString("USER_SEND"));
+				al1.add(message);
+			}
+			if (al1.size() <= 5) {
+				al.addAll(al1);
+			} else {
+				for (int i = 0; i <= 4; i++) {
+					al.add(al1.get(al1.size() - (5 - i)));
+				}
+			}
+			System.out.println(al1.size()+"...");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			close(stmt, rs);
 		}
-
 		return al;
 	}
 
@@ -908,8 +927,8 @@ public class oraclecaozuo {
 				qq_message message = new qq_message();
 				message.setId(rs.getInt("JILU_ID"));
 				message.setMessage(rs.getString("NEIRONG"));
-				message.setReciveUser_zhanghao(recivezhanghao+"");
-				message.setSendUser_zhanghao(sendzhanghao+"");
+				message.setReciveUser_zhanghao(recivezhanghao + "");
+				message.setSendUser_zhanghao(sendzhanghao + "");
 				al.add(message);
 			}
 		} catch (Exception e) {
