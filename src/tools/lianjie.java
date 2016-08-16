@@ -412,6 +412,9 @@ public class lianjie extends Thread {
 			ArrayList<qq_message> al = oczqq.getJilu(duifangzhanghao, zhangHao, qqmessage_id);
 			response.setResponse("消息记录");
 			response.setObj(al);
+		}else if("刷新好友列表".equals(zhiLing)){
+			reflushFrindList(zhangHao);
+			response.setResponse("刷新好友列表成功");
 		}
 		return response;
 	}
