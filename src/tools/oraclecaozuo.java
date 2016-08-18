@@ -1,7 +1,6 @@
 package tools;
 
 import java.io.File;
-import java.io.ObjectInputStream.GetField;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -10,8 +9,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import comm.Modify_groupitem;
 import comm.SysInfo;
@@ -895,7 +892,7 @@ public class oraclecaozuo {
 					al.add(al1.get(al1.size() - (5 - i)));
 				}
 			}
-			System.out.println(al1.size()+"...");
+			System.out.println(al1.size() + "...");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1030,5 +1027,4 @@ public class oraclecaozuo {
 		}
 		return zhanghao;
 	}
-
 }
